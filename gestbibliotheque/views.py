@@ -1,6 +1,8 @@
 from rest_framework.viewsets import ModelViewSet
 from gestbibliotheque.serializers import AuteurListSerializer,LivreListSerializer,CategorieSerializer,AuteurDetailSerializer,LivreDetailSerializer
 from gestbibliotheque.models import Auteur,Livre,Categorie
+from gestbibliotheque.permissions import IsAdmin,IsBibliothecaireOuAdmin
+from rest_framework.permissions import IsAuthenticated
 
 # views Mixins
 
@@ -19,9 +21,19 @@ class AuteurView(MultipleSerializerMixin,ModelViewSet):
 
 
 
+
     def get_queryset(self):
         auteur=Auteur.objects.all()
         return auteur
+
+    # fonction pour la permisson
+
+    def get_permissions(self):
+        if self.action in ['create','update','update_partials']:
+            return [IsBibliothecaireOuAdmin()]
+        if self.action == 'destroy':
+            return [IsAdmin()]
+        return [IsAuthenticated()]
 
 
 # views Categorie
@@ -34,6 +46,14 @@ class CategorieView(ModelViewSet):
         categorie=Categorie.objects.all()
         return categorie
 
+
+    def get_permissions(self):
+            if self.action in ['create','update','update_partials']:
+                return [IsBibliothecaireOuAdmin()]
+            if self.action == 'destroy':
+                return [IsAdmin()]
+            return [IsAuthenticated()]
+
 # views Livre
 
 class LivreView(MultipleSerializerMixin,ModelViewSet):
@@ -43,4 +63,12 @@ class LivreView(MultipleSerializerMixin,ModelViewSet):
     def get_queryset(self):
         livre=Livre.objects.all()
         return livre
+
+
+    def get_permissions(self):
+            if self.action in ['create','update','update_partials']:
+                return [IsBibliothecaireOuAdmin()]
+            if self.action == 'destroy':
+                return [IsAdmin()]
+            return [IsAuthenticated()]
     
