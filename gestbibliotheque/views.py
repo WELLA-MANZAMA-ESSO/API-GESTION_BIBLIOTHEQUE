@@ -1,7 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
 from gestbibliotheque.serializers import AuteurListSerializer,LivreListSerializer,CategorieSerializer,AuteurDetailSerializer,LivreDetailSerializer
 from gestbibliotheque.models import Auteur,Livre,Categorie
-from utilisateurs.models import Utilisateur
+
 # views Mixins
 
 class MultipleSerializerMixin:
@@ -23,4 +23,24 @@ class AuteurView(MultipleSerializerMixin,ModelViewSet):
         auteur=Auteur.objects.all()
         return auteur
 
+
+# views Categorie
+
+class CategorieView(ModelViewSet):
+
+    serializer_class=CategorieSerializer
+
+    def get_queryset(self):
+        categorie=Categorie.objects.all()
+        return categorie
+
+# views Livre
+
+class LivreView(MultipleSerializerMixin,ModelViewSet):
+    serializer_class=LivreListSerializer
+    detail_serializer_class=LivreDetailSerializer
+
+    def get_queryset(self):
+        livre=Livre.objects.all()
+        return livre
     
