@@ -6,10 +6,10 @@ from utilisateurs.models import Utilisateur
 class UtilisateurListSerializer(ModelSerializer):
     class Meta:
         model=Utilisateur
-        fields=['username','email']
+        fields=['id','username','email']
         
 class UtilisateurDetailSerializer(ModelSerializer):
     class Meta:
         model=Utilisateur
-        fields=['username','email','telephone','role']
+        fields=['id','username','email','telephone','role']
         read_only_fields=['role']
