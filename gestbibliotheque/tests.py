@@ -75,6 +75,7 @@ class APItestAuteur(APITestCase):
 # test CRUD pou le livre
 
 class APITestLivre(APITestCase):
+    maxDiff=None
     def setUp(self):
         
         self.user=Utilisateur.objects.create_user(username='johny',email='johny01@gmail.com')
@@ -109,6 +110,67 @@ class APITestLivre(APITestCase):
         ]
 
         self.assertEqual(resultat_attendu,response.json())
+
+    # test detail 
+    def test_detail_livre(self):
+        response=self.client.get(self.detail_url)
+        self.assertEqual(response.status_code,200)
+        resultat_attendu ={
+
+                'id':self.livre.pk,
+                'titre':self.livre.titre,
+                'isbn':self.livre.isbn,
+                'date_retour':self.livre.date_retour,
+                'date_ajout':self.livre.date_ajout.isoformat().replace('+00:00', 'Z'),
+                'date_termine':self.livre.date_termine,
+                'emprunt':self.livre.emprunt,
+                'date_emprunt':self.livre.date_emprunt,
+                'categorie':{
+                    'id':self.categorie.pk,
+                    'nom':self.categorie.nom
+
+                },
+                'auteur':{
+                    'id':self.auteur.pk,
+                    'nom':self.auteur.nom,
+                    'prenom':self.auteur.prenom,
+                    'age':self.auteur.age,
+                    'pays':self.auteur.pays
+                },
+                'utilisateur':{
+                    'id':self.user.pk,
+                    'username':self.user.username,
+                    'email':self.user.email,
+                    'telephone':self.user.telephone,
+                    'role':self.user.role
+                }
+                
+                
+        }
+
+        self.assertEqual(resultat_attendu,response.json())
+
+    # test create livre
+    def test_create_livre(self):
+        response=self.client.post(self.url,data={'titre':'Jean piègé'})
+        self.assertEqual(response.status_code,403)
+        self.assertTrue(Livre.objects.count(),1)
+
+    # test update livre
+
+    def test_update_livre(self):
+        response=self.client.put(self.detail_url,data={'titre':'les larmes d\'une bonne' })
+        self.assertEqual(response.status_code,403)
+        self.assertEqual(self.livre.titre,'Mon père mon Héro')
+
+    # test delete livre
+
+    def test_delete_livre(self):
+        response=self.client.delete(self.detail_url)
+        self.assertEqual(response.status_code,403)
+        self.assertTrue(Livre.objects.exists())
+
+
 
 
 
