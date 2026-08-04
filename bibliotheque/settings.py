@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'gestbibliotheque',
     'utilisateurs',
+    
 ]
 
 MIDDLEWARE = [
@@ -135,3 +136,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Model d'authentification 
 
 AUTH_USER_MODEL= 'utilisateurs.Utilisateur'
+
+REST_FRAMEWORK={ 
+    'DEFAULT_PAGINATION_CLASS':'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE':10,
+    'DEFAULT_AUTHENTICATION_CLASSES':('rest_framework_simplejwt.authentication.JWTAuthentication',),
+}
