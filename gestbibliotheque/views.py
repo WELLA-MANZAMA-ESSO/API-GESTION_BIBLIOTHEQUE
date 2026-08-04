@@ -3,6 +3,8 @@ from gestbibliotheque.serializers import AuteurListSerializer,LivreListSerialize
 from gestbibliotheque.models import Auteur,Livre,Categorie
 from gestbibliotheque.permissions import IsAdmin,IsBibliothecaireOuAdmin
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 # views Mixins
 
@@ -71,4 +73,30 @@ class LivreView(MultipleSerializerMixin,ModelViewSet):
             if self.action == 'destroy':
                 return [IsAdmin()]
             return [IsAuthenticated()]
+
+    # Definissons la methode suivante pour permettre l'ajout automatique de l'utilisateur
+
+    def perform_create(self, serializer):
+        return serializer.save(utilisateur=self.request.user)
+
+    # Actions 
+    @action(detail=True,methods=['post'])
+    def emprunter(self,request,pk):
+        livre=self.get_object()
+        livre.emprunter()
+        return Response()
+
+    @action(detail=True,methods=['post'])
+    def rendre(self,request,pk):
+        livre=self.get_object()
+        livre.rendre()
+        return Response()
+
+    @action(detail=True,methods=['post'])
+    def marquer_lu(self,request,pk):
+        livre=self.get_object()
+        livre.marquer_lu()
+        return Response()        
+
+    
     
