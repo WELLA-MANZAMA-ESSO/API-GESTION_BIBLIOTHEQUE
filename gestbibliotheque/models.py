@@ -1,5 +1,6 @@
-from django.db import models
+from django.db import models, transaction
 from utilisateurs.models import Utilisateur
+from django.utils import timezone
 
 # models Auteur-Categorie-Livre
 
@@ -39,3 +40,36 @@ class Livre(models.Model):
     auteur=models.ForeignKey(Auteur, on_delete=models.CASCADE, related_name='auteur')
     categorie=models.ForeignKey(Categorie,on_delete=models.CASCADE,related_name='categorie')
     utilisateur=models.ForeignKey(Utilisateur,on_delete=models.CASCADE,related_name='utilisateur')
+
+
+    def __str__(self):
+        return self.titre
+
+     # Mise en place des actions
+    # Action emprunter
+    transaction.atomic
+    def emprunter(self):
+        if self.emprunt:
+            return
+        self.emprunt=True
+        self.date_ajout=timezone.now()
+        self.date_retour=None
+        self.save()
+    # Action rendre le livre
+    transaction.atomic
+    def rendre(self):
+        if self.emprunt:
+            return
+        self.emprunt=False
+        self.date_retour=timezone.now()
+        self.save()
+
+    # Action  marquer comme lu
+    transaction.atomic
+    def marquer_lu(self):
+        if self.date_retour is not None:
+            return
+        self.date_retour=timezone.now()
+        self.save()
+
+            
