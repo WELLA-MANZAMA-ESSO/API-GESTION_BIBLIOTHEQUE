@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 from decouple import config
 from datetime import timedelta
+import dj_database_url
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -50,6 +51,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',# 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -80,17 +82,24 @@ WSGI_APPLICATION = 'bibliotheque.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+DATABASES_URL=config('DATABASES_URL',default=None)
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'),
-        'USER':config('DB_USER'),
-        'PASSWORD':config('DB_PASSWORD'),
-        'HOST':config('DB_HOST'),
-        'PORT':config('DB_PORT')
+if DATABASES_URL:
+    DATABASES={
+        'default':'dj_database_url.parse(DATABASE_URL)'
     }
-}
+else:
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('DB_NAME'),
+            'USER':config('DB_USER'),
+            'PASSWORD':config('DB_PASSWORD'),
+            'HOST':config('DB_HOST'),
+            'PORT':config('DB_PORT')
+        }
+    }
 
 
 # Password validation
@@ -147,5 +156,18 @@ REST_FRAMEWORK={
 
 SIMPLE_JWT={
     'ACCESS_TOKEN_LIFETIME':timedelta(minutes=30),
-    'REFRESH_TOKEN_LIFETIME':timedelta(days=7)
+    'REFRESH_TOKEN_LIFETIME':timedelta(days=7),
+}
+
+# 
+ALLOWED_HOSTS=config('ALLOWED_HOSTS',default='localhost,127.0.0.1',cast=lambda v: v.split(','))
+# fichier static
+
+STATIC_URL='static/'
+STATIC_ROOT=BASE_DIR / 'staticfiles'
+
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
 }
